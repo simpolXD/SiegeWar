@@ -1,0 +1,87 @@
+name: AbyssalDominionSiegeWar
+version: '${project.version}'
+main: com.abyssaldominion.siegewar.AbyssalDominionSiegeWarPlugin
+api-version: '26.2'
+authors:
+- simp0ol
+description: 'Castle siege minigame. Private H2 ${h2.version}, HikariCP ${hikaricp.version}.'
+website: ''
+depend:
+- FastAsyncWorldEdit
+softdepend:
+- WorldGuard
+- Multiverse-Core
+- PlaceholderAPI
+- Geyser
+- Geyser-Spigot
+- Floodgate
+- floodgate
+- ViaVersion
+commands:
+  siegewar:
+    description: Castle siege minigame main command.
+    aliases:
+    - adsiege
+    - asw
+    usage: /siegewar help
+permissions:
+  abyssaldominionsiegewar.use:
+    description: Open public menus and help.
+    default: true
+  abyssaldominionsiegewar.join:
+    description: Join an eligible arena.
+    default: true
+  abyssaldominionsiegewar.spectate:
+    description: Spectate a running arena.
+    default: true
+  abyssaldominionsiegewar.stats:
+    description: View permitted statistics.
+    default: true
+  abyssaldominionsiegewar.kit.marksman:
+    description: Marksman kit access.
+    default: true
+  abyssaldominionsiegewar.kit.spearman:
+    description: Spearman kit access.
+    default: false
+  abyssaldominionsiegewar.kit.wizard:
+    description: Wizard kit access.
+    default: false
+  abyssaldominionsiegewar.kit.knight:
+    description: Knight kit access.
+    default: false
+  abyssaldominionsiegewar.kit.skald:
+    description: Skald kit access.
+    default: true
+  abyssaldominionsiegewar.kit.bombardier:
+    description: Bombardier kit access.
+    default: false
+  abyssaldominionsiegewar.kit.berserker:
+    description: Berserker kit access.
+    default: false
+  abyssaldominionsiegewar.kit.warrior:
+    description: Warrior kit access.
+    default: false
+  abyssaldominionsiegewar.admin:
+    description: Parent node for every administration capability.
+    default: op
+    children:
+      abyssaldominionsiegewar.admin.setup: true
+      abyssaldominionsiegewar.admin.manage: true
+      abyssaldominionsiegewar.admin.reload: true
+      abyssaldominionsiegewar.admin.coins: true
+      abyssaldominionsiegewar.admin.diagnostics: true
+  abyssaldominionsiegewar.admin.setup:
+    description: Arena, lobby and template setup.
+    default: op
+  abyssaldominionsiegewar.admin.manage:
+    description: Enable, disable, start, stop and reset arenas.
+    default: op
+  abyssaldominionsiegewar.admin.reload:
+    description: Validated configuration reload.
+    default: op
+  abyssaldominionsiegewar.admin.coins:
+    description: Audited siege coin changes.
+    default: op
+  abyssaldominionsiegewar.admin.diagnostics:
+    description: Validation and diagnostics report.
+    default: op

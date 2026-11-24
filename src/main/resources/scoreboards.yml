@@ -1,0 +1,11 @@
+# Native placeholders are resolved by the runtime; PlaceholderAPI is not required.
+title: '<gold>Siege War</gold>'
+lines:
+  - '<gray>Arena: <white><arena>'
+  - '<gray>State: <white><state>'
+  - '<gray>Team: <white><team>'
+  - '<gray>Kit: <white><kit>'
+  - '<gray>Players: <white><players>/<max_players>'
+  - '<gray>Time: <white><time_remaining>'
+  - '<red>King: <white><king_health>/<king_max_health> HP'
+  - '<gold>Coins: <white><coins>'

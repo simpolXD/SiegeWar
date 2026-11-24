@@ -1,0 +1,12 @@
+# Ordinary click/tap actions; never require shift or right-click purchases.
+title: '<gold>Siege War</gold>'
+arena-title: '<gold>Choose arena</gold>'
+team-title: '<gold>Choose team</gold>'
+kit-title: '<gold>Choose kit</gold>'
+confirm-title: '<gold>Confirm purchase</gold>'
+select: '<green>Select</green>'
+buy: '<gold>Buy for <price> coins</gold>'
+confirm: '<green>Confirm</green>'
+cancel: '<red>Cancel</red>'
+leave: '<red>Leave safely</red>'
+locked: '<gray>Locked — tap for details</gray>'

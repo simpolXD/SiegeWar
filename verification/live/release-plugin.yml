@@ -1,0 +1,8 @@
+name: ReleaseVerification
+version: 1.0.3
+main: ReleaseVerification
+api-version: '26.2'
+depend: [AbyssalDominionSiegeWar, WorldGuard]
+commands:
+  releasecheck:
+    description: Staging-only verification

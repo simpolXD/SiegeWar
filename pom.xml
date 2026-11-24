@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.abyssaldominion</groupId><artifactId>abyssaldominionsiegewar</artifactId><version>1.0.3</version>
+  <name>AbyssalDominionSiegeWar</name>
+  <properties>
+    <maven.compiler.release>25</maven.compiler.release><project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <h2.version>2.3.232</h2.version><hikaricp.version>6.3.0</hikaricp.version>
+  </properties>
+  <repositories>
+    <repository><id>paper</id><url>https://repo.papermc.io/repository/maven-public/</url></repository>
+    <repository><id>enginehub</id><url>https://maven.enginehub.org/repo/</url></repository>
+    <repository><id>placeholderapi</id><url>https://repo.extendedclip.com/releases/</url></repository>
+  </repositories>
+  <dependencies>
+    <dependency><groupId>io.papermc.paper</groupId><artifactId>paper-api</artifactId><version>26.2.build.135-stable</version><scope>provided</scope></dependency>
+    <dependency><groupId>com.fastasyncworldedit</groupId><artifactId>FastAsyncWorldEdit-Core</artifactId><version>2.16.2</version><scope>provided</scope></dependency>
+    <dependency><groupId>com.fastasyncworldedit</groupId><artifactId>FastAsyncWorldEdit-Bukkit</artifactId><version>2.16.2</version><scope>provided</scope></dependency>
+    <dependency><groupId>com.sk89q.worldguard</groupId><artifactId>worldguard-bukkit</artifactId><version>7.0.19</version><scope>provided</scope></dependency>
+    <dependency><groupId>me.clip</groupId><artifactId>placeholderapi</artifactId><version>2.12.3</version><scope>provided</scope></dependency>
+    <dependency><groupId>com.h2database</groupId><artifactId>h2</artifactId><version>${h2.version}</version></dependency>
+    <dependency><groupId>com.zaxxer</groupId><artifactId>HikariCP</artifactId><version>${hikaricp.version}</version></dependency>
+    <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>2.0.17</version><scope>provided</scope></dependency>
+    <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>5.12.2</version><scope>test</scope></dependency>
+  </dependencies>
+  <build>
+    <finalName>AbyssalDominionSiegeWar-${project.version}</finalName>
+    <resources>
+      <resource><directory>src/main/resources</directory><filtering>false</filtering><excludes><exclude>plugin.yml</exclude><exclude>build.properties</exclude></excludes></resource>
+      <resource><directory>src/main/resources</directory><filtering>true</filtering><includes><include>plugin.yml</include><include>build.properties</include></includes></resource>
+    </resources>
+    <plugins>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.14.0</version></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>3.5.3</version><configuration><failIfNoTests>true</failIfNoTests></configuration></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-dependency-plugin</artifactId><version>3.8.1</version>
+        <executions><execution><id>offline-legacy-database-reader</id><phase>process-resources</phase><goals><goal>copy</goal></goals><configuration>
+          <artifactItems><artifactItem><groupId>com.h2database</groupId><artifactId>h2</artifactId><version>${h2.version}</version><type>jar</type><outputDirectory>${project.build.outputDirectory}/migration</outputDirectory><destFileName>legacy-h2.jar</destFileName></artifactItem></artifactItems>
+        </configuration></execution></executions>
+      </plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-antrun-plugin</artifactId><version>3.1.0</version>
+        <executions><execution><id>relocate-h2-resource-archive</id><phase>process-classes</phase><goals><goal>run</goal></goals><configuration><target>
+          <unzip src="${project.build.outputDirectory}/migration/legacy-h2.jar" dest="${project.build.directory}/h2-resources"><patternset><include name="org/h2/util/data.zip"/></patternset></unzip>
+          <unzip src="${project.build.directory}/h2-resources/org/h2/util/data.zip" dest="${project.build.directory}/h2-resource-content"/>
+          <mkdir dir="${project.build.outputDirectory}/com/abyssaldominion/siegewar/internal/h2/util"/>
+          <zip destfile="${project.build.outputDirectory}/com/abyssaldominion/siegewar/internal/h2/util/data.zip"><zipfileset dir="${project.build.directory}/h2-resource-content/org/h2" prefix="com/abyssaldominion/siegewar/internal/h2"/></zip>
+        </target></configuration></execution></executions>
+      </plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId><version>3.4.1</version><configuration><archive><manifestEntries><Implementation-Title>${project.name}</Implementation-Title><Implementation-Version>${project.version}</Implementation-Version><H2-Version>${h2.version}</H2-Version><HikariCP-Version>${hikaricp.version}</HikariCP-Version></manifestEntries></archive></configuration></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-shade-plugin</artifactId><version>3.6.2</version>
+        <executions><execution><phase>package</phase><goals><goal>shade</goal></goals><configuration>
+          <createDependencyReducedPom>false</createDependencyReducedPom>
+          <relocations>
+            <relocation><pattern>org.h2</pattern><shadedPattern>com.abyssaldominion.siegewar.internal.h2</shadedPattern></relocation>
+            <relocation><pattern>org/h2</pattern><shadedPattern>com/abyssaldominion/siegewar/internal/h2</shadedPattern><rawString>true</rawString></relocation>
+            <relocation><pattern>com.zaxxer.hikari</pattern><shadedPattern>com.abyssaldominion.siegewar.internal.hikari</shadedPattern></relocation>
+          </relocations>
+          <transformers><transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/></transformers>
+          <filters><filter><artifact>*:*</artifact><excludes><exclude>META-INF/*.SF</exclude><exclude>META-INF/*.RSA</exclude><exclude>META-INF/*.DSA</exclude><exclude>module-info.class</exclude><exclude>META-INF/versions/**/module-info.class</exclude></excludes></filter><filter><artifact>com.h2database:h2</artifact><excludes><exclude>org/h2/util/data.zip</exclude></excludes></filter></filters>
+        </configuration></execution></executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
